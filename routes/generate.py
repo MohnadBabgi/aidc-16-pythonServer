@@ -10,7 +10,12 @@ model = AutoModelForCausalLM.from_pretrained(MODEL, local_files_only=True)
 
 def handle():
     prompt = "In one sentence, what is a data centre for?"
-    ids = tok(prompt, return_tensors="pt")
+    ids = tok.apply_chat_template(
+        [{"role": "user", "content": prompt}],
+        add_generation_prompt=True,
+        return_tensors="pt",
+        return_dict=True,
+    )
     t0 = time.perf_counter()
     out = model.generate(**ids, max_new_tokens=40, do_sample=False)
     dt = time.perf_counter() - t0
